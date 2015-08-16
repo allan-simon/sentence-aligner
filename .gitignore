@@ -1,3 +1,9 @@
+#
+#
+provisioning/roles/vim/files/.vim/autoload/
+provisioning/roles/vim/files/.vim/bundle/
+.vagrant
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
