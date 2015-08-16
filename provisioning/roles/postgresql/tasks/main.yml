@@ -1,6 +1,6 @@
 ---
 - name: PostgreSQL server and client
-  apt: name=postgresql-9.3,libpq-dev,python-psycopg2
+  apt: name=postgresql-9.3,libpq-dev,python-psycopg2,postgresql-contrib
 
 - name: PostgreSQL database user
   sudo_user: postgres
@@ -9,3 +9,7 @@
 - name: PostgreSQL database init
   sudo_user: postgres
   postgresql_db: name={{ DBNAME }} owner={{ DBUSER }}
+
+- name: Activate uuid extension
+  sudo_user: postgres
+  postgresql_ext: name=uuid-ossp db={{ DBNAME }}

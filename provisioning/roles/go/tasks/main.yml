@@ -37,3 +37,4 @@
   with_items:
       - github.com/nsf/gocode
       - bitbucket.org/gotamer/gowatch
+      - bitbucket.org/liamstask/goose/cmd/goose
