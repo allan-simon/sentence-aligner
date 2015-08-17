@@ -1,23 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"github.com/allan-simon/sentence-aligner/dao"
+	"github.com/allan-simon/sentence-aligner/sentenceservice"
+	"github.com/emicklei/go-restful"
 	"log"
 	"net/http"
 )
 
-type Hello struct{}
-
-func (h Hello) ServeHTTP(
-	w http.ResponseWriter,
-	r *http.Request) {
-	fmt.Fprint(w, "Hello!")
-}
-
 func main() {
-	var h Hello
-	err := http.ListenAndServe("0.0.0.0:8080", h)
-	if err != nil {
-		log.Fatal(err)
-	}
+	sentenceDao := &dao.SentenceDao{}
+	log.Println("Starting service")
+	restful.Add(sentenceservice.New(sentenceDao))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
