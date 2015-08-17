@@ -28,3 +28,4 @@
     - postgresql
     - {role: go, sudo: false}
     - {role: vim, sudo: false}
+    - {role: app, sudo: false}
