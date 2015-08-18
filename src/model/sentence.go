@@ -4,8 +4,8 @@ import "time"
 
 //Sentence Event message
 type Sentence struct {
-	SentenceID string    `json:"id"`
-	CreatedAt  time.Time `json:"created_at"`
+	SentenceID string    `json:"id,omitempty"`
+	CreatedAt  time.Time `json:"created_at,omitempty"`
 	Content    string    `json:"content"`
 	Lang       string    `json:"lang"`
 }

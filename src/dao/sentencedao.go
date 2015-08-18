@@ -78,3 +78,18 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 	return &sentences
 
 }
+
+// create a new sentence
+func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
+
+	_, err := DB.Exec("INSERT INTO sentence (content, iso639_3) VALUES ($1, $2)",
+		sentence.Content,
+		sentence.Lang)
+
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	return sentence
+}
