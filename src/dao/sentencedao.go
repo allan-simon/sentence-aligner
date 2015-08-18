@@ -41,3 +41,40 @@ func (d *SentenceDao) GetSentence(id string) *model.Sentence {
 
 	return nil
 }
+
+//GetSentences load all sentences from db
+func (d *SentenceDao) GetSentences() *model.Sentences {
+
+	var sentences model.Sentences
+
+	log.Println("Fetching sentences")
+	rows, err := DB.Query("SELECT id, added_at, content, iso639_3 FROM sentence")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(
+			&id,
+			&createdAt,
+			&content,
+			&lang)
+
+		if err != nil {
+			log.Println(err)
+		} else {
+			sentences = append(sentences,
+				model.Sentence{
+					SentenceID: id,
+					CreatedAt:  createdAt,
+					Content:    content,
+					Lang:       lang})
+		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+		return nil
+	}
+	return &sentences
+
+}
