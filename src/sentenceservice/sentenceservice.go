@@ -20,9 +20,11 @@ func New(dao *dao.SentenceDao) *restful.WebService {
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
 	log.Println("Adding GET /sentences/{sentence-id}")
+	log.Println("Adding PATCH /sentences/{sentence-id}")
 	log.Println("Adding GET /sentences")
 	log.Println("Adding POST /sentences")
 	service.Route(service.GET("/{sentence-id}").To(FindSentence))
+	service.Route(service.PATCH("/{sentence-id}").To(UpdateSentence))
 	service.Route(service.GET("/").To(FindSentences))
 	service.Route(service.POST("/").To(CreateSentence))
 
@@ -72,4 +74,30 @@ func CreateSentence(request *restful.Request, response *restful.Response) {
 		response.WriteError(http.StatusInternalServerError, errors.New("Error while saving sentence"))
 	}
 	response.WriteEntity(sentence)
+}
+
+// Update sentence
+func UpdateSentence(request *restful.Request, response *restful.Response) {
+	var sentence model.Sentence
+	err := request.ReadEntity(&sentence)
+	id := request.PathParameter("sentence-id")
+
+	if err != nil {
+		response.WriteError(http.StatusBadRequest, err)
+		return
+	}
+
+	updatedSentence, err := sentenceDao.UpdateSentence(id, &sentence)
+
+	if err == nil && updatedSentence == nil {
+		response.WriteError(http.StatusNotFound, errors.New("Sentence not found"))
+		return
+	}
+
+	if updatedSentence == nil {
+		response.WriteError(http.StatusInternalServerError, errors.New("Error while saving sentence"))
+		return
+	}
+
+	response.WriteEntity(updatedSentence)
 }

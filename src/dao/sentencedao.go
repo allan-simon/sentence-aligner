@@ -86,10 +86,34 @@ func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 		sentence.Content,
 		sentence.Lang)
 
+	// TODO: find a way to know when the error is because we're adding an existing sentence
 	if err != nil {
 		log.Println(err)
 		return nil
 	}
-
+	// TODO: get the actual saved sentence (with id and created_at)
 	return sentence
+}
+
+func (d *SentenceDao) UpdateSentence(id string, sentence *model.Sentence) (*model.Sentence, error) {
+	result, err := DB.Exec("UPDATE sentence SET content = $1, iso639_3 = $2 WHERE id =  $3",
+		sentence.Content,
+		sentence.Lang,
+		id,
+	)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if rowsAffected < 0 {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return sentence, nil
 }
