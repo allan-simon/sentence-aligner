@@ -85,16 +85,24 @@ func (d *TranslationDao) GetTranslations() *model.Translations {
 // create a new translation
 func (d *TranslationDao) CreateTranslation(translation *model.Translation) *model.Translation {
 
-	_, err := DB.Exec("INSERT INTO translation (source_id, dest_id) VALUES ($1, $2)",
+	err := DB.QueryRow(
+		`
+			INSERT INTO translation (source_id, dest_id)
+			VALUES ($1, $2)
+			RETURNING id, added_at
+		`,
 		translation.SourceID,
-		translation.DestID)
+		translation.DestID,
+	).Scan(
+		&translation.TranslationID,
+		&translation.CreatedAt,
+	)
 
 	// TODO: find a way to know when the error is because we're adding an existing translation
 	if err != nil {
 		log.Println(err)
 		return nil
 	}
-	// TODO: get the actual saved translation (with id and created_at)
 	return translation
 }
 

@@ -82,21 +82,30 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 // create a new sentence
 func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 
-	_, err := DB.Exec("INSERT INTO sentence (content, iso639_3) VALUES ($1, $2)",
+	err := DB.QueryRow(
+		`
+			INSERT INTO sentence (content, iso639_3)
+			VALUES ($1, $2)
+			RETURNING id, added_at
+		`,
 		sentence.Content,
-		sentence.Lang)
+		sentence.Lang,
+	).Scan(
+		&sentence.SentenceID,
+		&sentence.CreatedAt,
+	)
 
 	// TODO: find a way to know when the error is because we're adding an existing sentence
 	if err != nil {
 		log.Println(err)
 		return nil
 	}
-	// TODO: get the actual saved sentence (with id and created_at)
 	return sentence
 }
 
 func (d *SentenceDao) UpdateSentence(id string, sentence *model.Sentence) (*model.Sentence, error) {
-	result, err := DB.Exec("UPDATE sentence SET content = $1, iso639_3 = $2 WHERE id =  $3",
+	result, err := DB.Exec(
+		"UPDATE sentence SET content = $1, iso639_3 = $2 WHERE id =  $3",
 		sentence.Content,
 		sentence.Lang,
 		id,
