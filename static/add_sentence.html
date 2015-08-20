@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add sentence</title>
+
+    <link rel="stylesheet" media="all" href="/static/bootstrap.css" />
+</head>
+
+<body>
+    <form onsubmit="Add.submit(this, document.getElementById('result')); return false;">
+        <input
+            id="content"
+            type="text"
+            name="content"
+            pattern="[^a-z0-1 ].*[.!?！？。]$"
+            placeholder="type your sentence here"
+            required="true"
+        />
+        <br/>
+        <input
+            id="lang"
+            type="text"
+            name="lang"
+            pattern="(eng|fra|cmn)"
+            required="true"
+        />
+        <br/>
+        <input type="submit">
+    </form>
+    <h3>Result:</h3>
+    <div id="result"></div>
+
+    <script src="/static/add_sentence.js"></script>
+</body>
+</html>
