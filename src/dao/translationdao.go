@@ -24,7 +24,8 @@ func (d *TranslationDao) GetTranslation(id string) *model.Translation {
 		&sourceId,
 		&destId,
 		&alignmentSource,
-		&alignmentDest)
+		&alignmentDest,
+	)
 
 	if err != nil {
 		log.Println(err)
@@ -47,10 +48,23 @@ func (d *TranslationDao) GetTranslations() *model.Translations {
 	var translations model.Translations
 
 	log.Println("Fetching translations")
-	rows, err := DB.Query("SELECT id, added_at, source_id, dest_id, alignment_source, alignment_dest FROM translation")
+	rows, err := DB.Query(
+		`
+			SELECT
+				id,
+				added_at,
+				source_id,
+				dest_id,
+				alignment_source,
+				alignment_dest
+			FROM translation
+		`,
+	)
+
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer rows.Close()
 	for rows.Next() {
 		err := rows.Scan(
@@ -59,21 +73,26 @@ func (d *TranslationDao) GetTranslations() *model.Translations {
 			&sourceId,
 			&destId,
 			&alignmentSource,
-			&alignmentDest)
+			&alignmentDest,
+		)
 
 		if err != nil {
 			log.Println(err)
-		} else {
-			translations = append(translations,
-				model.Translation{
-					TranslationID:   id,
-					CreatedAt:       createdAt,
-					SourceID:        sourceId,
-					DestID:          destId,
-					AlignmentDest:   alignmentDest,
-					AlignmentSource: alignmentSource})
+			continue
 		}
+		translations = append(
+			translations,
+			model.Translation{
+				TranslationID:   id,
+				CreatedAt:       createdAt,
+				SourceID:        sourceId,
+				DestID:          destId,
+				AlignmentDest:   alignmentDest,
+				AlignmentSource: alignmentSource,
+			},
+		)
 	}
+
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
 		return nil
@@ -83,7 +102,9 @@ func (d *TranslationDao) GetTranslations() *model.Translations {
 }
 
 // create a new translation
-func (d *TranslationDao) CreateTranslation(translation *model.Translation) *model.Translation {
+func (d *TranslationDao) CreateTranslation(
+	translation *model.Translation,
+) *model.Translation {
 
 	err := DB.QueryRow(
 		`
@@ -107,8 +128,13 @@ func (d *TranslationDao) CreateTranslation(translation *model.Translation) *mode
 }
 
 // add alignments data to an existing translation
-func (d *TranslationDao) AddAlignments(id string, translation *model.Translation) (*model.Translation, error) {
-	result, err := DB.Exec("UPDATE translation SET alignment_source = $1, alignment_dest = $2 WHERE id =  $3",
+func (d *TranslationDao) AddAlignments(
+	id string,
+	translation *model.Translation,
+) (*model.Translation, error) {
+
+	result, err := DB.Exec(
+		"UPDATE translation SET alignment_source = $1, alignment_dest = $2 WHERE id =  $3",
 		translation.AlignmentSource,
 		translation.AlignmentDest,
 		id,

@@ -19,27 +19,30 @@ type SentenceDao struct {
 //GetSentence load sentence from db
 func (d *SentenceDao) GetSentence(id string) *model.Sentence {
 	log.Println("Fetching sentence with id:" + id)
-	err := DB.QueryRow("SELECT id, added_at, content, iso639_3 FROM sentence WHERE id = $1", id).
-		Scan(
+	err := DB.QueryRow(
+		`SELECT id, added_at, content, iso639_3 FROM sentence WHERE id = $1`,
+		id,
+	).Scan(
 		&id,
 		&createdAt,
 		&content,
-		&lang)
+		&lang,
+	)
 
 	if err != nil {
 		log.Println(err)
-	} else {
-		log.Println(id, createdAt, content, lang)
-		sentence := &model.Sentence{
-			SentenceID: id,
-			CreatedAt:  createdAt,
-			Content:    content,
-			Lang:       lang}
-
-		return sentence
+		return nil
 	}
 
-	return nil
+	log.Println(id, createdAt, content, lang)
+	sentence := &model.Sentence{
+		SentenceID: id,
+		CreatedAt:  createdAt,
+		Content:    content,
+		Lang:       lang,
+	}
+
+	return sentence
 }
 
 //GetSentences load all sentences from db
@@ -58,23 +61,29 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 			&id,
 			&createdAt,
 			&content,
-			&lang)
+			&lang,
+		)
 
 		if err != nil {
 			log.Println(err)
-		} else {
-			sentences = append(sentences,
-				model.Sentence{
-					SentenceID: id,
-					CreatedAt:  createdAt,
-					Content:    content,
-					Lang:       lang})
+			continue
 		}
+		sentences = append(
+			sentences,
+			model.Sentence{
+				SentenceID: id,
+				CreatedAt:  createdAt,
+				Content:    content,
+				Lang:       lang,
+			},
+		)
 	}
+
 	if err := rows.Err(); err != nil {
 		log.Fatal(err)
 		return nil
 	}
+
 	return &sentences
 
 }
@@ -95,7 +104,8 @@ func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 		&sentence.CreatedAt,
 	)
 
-	// TODO: find a way to know when the error is because we're adding an existing sentence
+	// TODO: find a way to know when the error is because
+	// we're adding an existing sentence
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -103,13 +113,18 @@ func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 	return sentence
 }
 
-func (d *SentenceDao) UpdateSentence(id string, sentence *model.Sentence) (*model.Sentence, error) {
+func (d *SentenceDao) UpdateSentence(
+	id string,
+	sentence *model.Sentence,
+) (*model.Sentence, error) {
+
 	result, err := DB.Exec(
 		"UPDATE sentence SET content = $1, iso639_3 = $2 WHERE id =  $3",
 		sentence.Content,
 		sentence.Lang,
 		id,
 	)
+
 	if err != nil {
 		log.Println(err)
 		return nil, err

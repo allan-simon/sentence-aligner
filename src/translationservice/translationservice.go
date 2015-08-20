@@ -19,10 +19,12 @@ func New(dao *dao.TranslationDao) *restful.WebService {
 		Path("/translations").
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
+
 	log.Println("Adding GET /translations/{translation-id}")
 	log.Println("Adding POST /translations")
 	log.Println("Adding GET /translations")
 	log.Println("Adding PUT /translations/{translation-id}/alignments")
+
 	service.Route(service.GET("/{translation-id}").To(FindTranslation))
 	service.Route(service.POST("/").To(CreateTranslation))
 	service.Route(service.GET("/").To(FindTranslations))
@@ -33,12 +35,16 @@ func New(dao *dao.TranslationDao) *restful.WebService {
 
 //FindTranslation load translation and return json representation
 func FindTranslation(request *restful.Request, response *restful.Response) {
+
 	log.Println("Received GET for translation by id")
 	id := request.PathParameter("translation-id")
 	translation := translationDao.GetTranslation(id)
 
 	if translation == nil {
-		response.WriteError(http.StatusNotFound, errors.New("Translation not found"))
+		response.WriteError(
+			http.StatusNotFound,
+			errors.New("Translation not found"),
+		)
 		return
 	}
 	response.WriteEntity(translation)
@@ -50,7 +56,10 @@ func FindTranslations(request *restful.Request, response *restful.Response) {
 	translations := translationDao.GetTranslations()
 
 	if translations == nil {
-		response.WriteError(http.StatusNotFound, errors.New("Translations not found (?)"))
+		response.WriteError(
+			http.StatusNotFound,
+			errors.New("Translations not found (?)"),
+		)
 		return
 	}
 	response.WriteEntity(translations)
@@ -58,21 +67,24 @@ func FindTranslations(request *restful.Request, response *restful.Response) {
 
 // create translation
 func CreateTranslation(request *restful.Request, response *restful.Response) {
-	var translation1 model.Translation
 
-	err := request.ReadEntity(&translation1)
+	var translation model.Translation
+	err := request.ReadEntity(&translation)
 
 	if err != nil {
 		response.WriteError(http.StatusBadRequest, err)
 		return
 	}
 
-	translation := translationDao.CreateTranslation(&translation1)
+	createdTranslation := translationDao.CreateTranslation(&translation)
 
-	if translation == nil {
-		response.WriteError(http.StatusInternalServerError, errors.New("Error while saving translation"))
+	if createdTranslation == nil {
+		response.WriteError(
+			http.StatusInternalServerError,
+			errors.New("Error while saving translation"),
+		)
 	}
-	response.WriteEntity(translation)
+	response.WriteEntity(CreateTranslation)
 }
 
 // Add alignments to a translation
