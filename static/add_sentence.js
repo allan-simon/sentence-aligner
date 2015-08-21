@@ -9,24 +9,19 @@ var submit = function (form, resultDiv) {
         'content' : form.content.value
     };
 
-    var request = new XMLHttpRequest();
-    request.open('POST', '/sentences', true);
-    request.setRequestHeader('Content-Type', 'application/json');
-
-    request.onload = function () {
-        if (request.status !== 200) {
-            console.warn("not 200");
-            return;
-        }
-        var sentence = JSON.parse(request.responseText)
-        resultDiv.innerHTML = "OK <a href='/static/show_sentence?id=" + sentence['id'] + "'>show</a>";
-
-    }
-    request.onerror = function () {
-        resultDiv.innerHTML = "Error"
-    }
-
-    request.send(JSON.stringify(formData));
+    Async.post('/sentences', formData)
+        .then(
+            function(sentence) {
+                resultDiv.innerHTML = (
+                    "OK" +
+                    "<a href='/static/show_sentence.html?id=" + sentence.id + "'>" +
+                    "show" +
+                    "</a>"
+                );
+            }
+        )
+        .catch(function () { resultDiv.innerHTML = "Error"; })
+    ;
 }
 
 
