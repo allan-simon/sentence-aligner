@@ -88,6 +88,40 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 
 }
 
+func (d *SentenceDao) GetSentenceByContentLang(
+	sentence *model.Sentence,
+) *model.Sentence {
+
+	err := DB.QueryRow(
+		`
+			SELECT id, added_at, content, iso639_3
+			FROM sentence
+			WHERE content = $1 AND iso639_3 = $2
+		`,
+		sentence.Content,
+		sentence.Lang,
+	).Scan(
+		&id,
+		&createdAt,
+		&content,
+		&lang,
+	)
+
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	existingSentence := &model.Sentence{
+		SentenceID: id,
+		CreatedAt:  createdAt,
+		Content:    content,
+		Lang:       lang,
+	}
+
+	return existingSentence
+}
+
 // create a new sentence
 func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 
@@ -104,8 +138,6 @@ func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 		&sentence.CreatedAt,
 	)
 
-	// TODO: find a way to know when the error is because
-	// we're adding an existing sentence
 	if err != nil {
 		log.Println(err)
 		return nil

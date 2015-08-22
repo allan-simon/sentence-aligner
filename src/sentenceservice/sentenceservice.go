@@ -76,11 +76,22 @@ func CreateSentence(request *restful.Request, response *restful.Response) {
 
 	createdSentence := sentenceDao.CreateSentence(&sentence)
 
-	if CreateSentence == nil {
-		response.WriteError(
-			http.StatusInternalServerError,
-			errors.New("Error while saving sentence"),
+	if createdSentence == nil {
+		existingSentence := sentenceDao.GetSentenceByContentLang(&sentence)
+		if existingSentence == nil {
+			response.WriteError(
+				http.StatusInternalServerError,
+				errors.New("Error while saving sentence"),
+			)
+			return
+		}
+		response.WriteHeader(http.StatusSeeOther)
+		response.ResponseWriter.Header().Set(
+			"link",
+			"/sentences/"+existingSentence.SentenceID,
 		)
+		response.WriteEntity(existingSentence)
+		return
 	}
 	response.WriteEntity(createdSentence)
 }

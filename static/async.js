@@ -28,7 +28,8 @@ var Async = (function () {
                 client.send(JSON.stringify(data));
 
                 client.onload = function () {
-                    if (this.status === 200 || this.status === 201) {
+                    // we use 303 in case of duplicate content
+                    if (this.status === 200 || this.status === 201 || this.status === 303) {
                         resolve(JSON.parse(this.response));
                     } else {
                         reject(this.statusText);
