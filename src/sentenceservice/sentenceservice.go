@@ -119,10 +119,21 @@ func UpdateSentence(request *restful.Request, response *restful.Response) {
 	}
 
 	if updatedSentence == nil {
-		response.WriteError(
-			http.StatusInternalServerError,
-			errors.New("Error while saving sentence"),
+		// TODO: duplicated code: factorize
+		existingSentence := sentenceDao.GetSentenceByContentLang(&sentence)
+		if existingSentence == nil {
+			response.WriteError(
+				http.StatusInternalServerError,
+				errors.New("Error while saving sentence"),
+			)
+			return
+		}
+		response.WriteHeader(http.StatusSeeOther)
+		response.ResponseWriter.Header().Set(
+			"link",
+			"/sentences/"+existingSentence.SentenceID,
 		)
+		response.WriteEntity(existingSentence)
 		return
 	}
 

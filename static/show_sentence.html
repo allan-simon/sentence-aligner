@@ -54,5 +54,45 @@
         <input type="submit">
     </form>
     <script src="/static/translate.js"></script>
+
+    <h4> Edit Sentence</h4>
+    <form
+        onsubmit="
+            EditSentence.submit(
+                UrlUtils.getUrlParameter('id'),
+                this,
+                document.getElementById('edit_result')
+            );
+            return false;
+        "
+        id="edit_sentence_form"
+    >
+        <input
+            id="edit_content"
+            type="text"
+            name="edit_content"
+            pattern="[^a-z0-1 ].*[.!?！？。]$"
+            placeholder="type your sentence here"
+            required="true"
+        />
+        <br/>
+        <input
+            id="edit_lang"
+            type="text"
+            name="edit_lang"
+            pattern="(eng|fra|cmn)"
+            required="true"
+        />
+        <br/>
+        <input type="submit">
+    </form>
+    <div id="edit_result"></div>
+    <script src="/static/edit_sentence.js"></script>
+    <script>
+        EditSentence.load(
+            UrlUtils.getUrlParameter('id'),
+            document.getElementById('edit_sentence_form')
+        )
+    </script>
 </body>
 </html>

@@ -170,6 +170,7 @@ func (d *SentenceDao) UpdateSentence(
 	if err != nil {
 		return nil, err
 	}
+	sentence.SentenceID = id
 
 	return sentence, nil
 }

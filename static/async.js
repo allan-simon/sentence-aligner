@@ -57,6 +57,9 @@ var Async = (function () {
         'post' : function(url, data) {
             return ajax('POST', url, data);
         },
+        'patch' : function(url, data) {
+            return ajax('PATCH', url, data);
+        },
         'put' : function(url, data) {
           return ajax('PUT', url, data);
         },
