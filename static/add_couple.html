@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add sentence</title>
+
+    <link rel="stylesheet" media="all" href="/static/bootstrap.css" />
+</head>
+
+<body>
+    <form method="POST" onsubmit="AddCouple.submit(this, document.getElementById('result')); return false;">
+        <input
+            id="source-content"
+            type="text"
+            name="source_content"
+            pattern="[^a-z0-1 ].*[.!?！？。]$"
+            placeholder="type your sentence here"
+            required="true"
+        />
+        <br/>
+        <input
+            id="source_lang"
+            type="text"
+            name="source_lang"
+            pattern="(eng|fra|cmn)"
+            required="true"
+        />
+        <br/>
+        <br/>
+
+        <input
+            id="dest_content"
+            type="text"
+            name="dest_content"
+            pattern="[^a-z0-1 ].*[.!?！？。]$"
+            placeholder="type your sentence here"
+            required="true"
+        />
+        <br/>
+        <input
+            id="dest_lang"
+            type="text"
+            name="dest_lang"
+            pattern="(eng|fra|cmn)"
+            required="true"
+        />
+        <br/>
+        <input type="submit">
+
+    </form>
+    <h3>Result:</h3>
+    <div id="result"></div>
+
+    <script src="/static/async.js"></script>
+    <script src="/static/add_couple.js"></script>
+</body>
+</html>
