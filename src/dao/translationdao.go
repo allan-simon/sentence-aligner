@@ -101,6 +101,43 @@ func (d *TranslationDao) GetTranslations() *model.Translations {
 
 }
 
+// Get translation by source id and dest id
+func (d *TranslationDao) GetTranslationBySourceDestId(
+	translation *model.Translation,
+) *model.Translation {
+
+	log.Println("Fetching translation with id:" + id)
+	err := DB.QueryRow(
+		`
+			SELECT id, source_id, dest_id, alignment_source, alignment_dest
+			FROM translation
+			WHERE source_id = $1 AND dest_id = $2
+		`,
+		translation.SourceID,
+		translation.DestID,
+	).Scan(
+		&id,
+		&sourceId,
+		&destId,
+		&alignmentSource,
+		&alignmentDest,
+	)
+
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	existingTranslation := &model.Translation{
+		TranslationID:   id,
+		CreatedAt:       createdAt,
+		SourceID:        sourceId,
+		DestID:          destId,
+		AlignmentSource: alignmentSource,
+		AlignmentDest:   alignmentDest}
+
+	return existingTranslation
+}
+
 // create a new translation
 func (d *TranslationDao) CreateTranslation(
 	translation *model.Translation,

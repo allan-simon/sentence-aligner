@@ -79,12 +79,23 @@ func CreateTranslation(request *restful.Request, response *restful.Response) {
 	createdTranslation := translationDao.CreateTranslation(&translation)
 
 	if createdTranslation == nil {
-		response.WriteError(
-			http.StatusInternalServerError,
-			errors.New("Error while saving translation"),
+		existingTranslation := translationDao.GetTranslationBySourceDestId(&translation)
+		if existingTranslation == nil {
+			response.WriteError(
+				http.StatusInternalServerError,
+				errors.New("Error while saving translation"),
+			)
+			return
+		}
+		response.WriteHeader(http.StatusSeeOther)
+		response.ResponseWriter.Header().Set(
+			"link",
+			"/translations/"+existingTranslation.TranslationID,
 		)
+		response.WriteEntity(existingTranslation)
+		return
 	}
-	response.WriteEntity(CreateTranslation)
+	response.WriteEntity(createdTranslation)
 }
 
 // Add alignments to a translation
@@ -106,7 +117,10 @@ func AddAlignments(request *restful.Request, response *restful.Response) {
 	}
 
 	if updatedTranslation == nil {
-		response.WriteError(http.StatusInternalServerError, errors.New("Error while adding alignments"))
+		response.WriteError(
+			http.StatusInternalServerError,
+			errors.New("Error while adding alignments"),
+		)
 		return
 	}
 
