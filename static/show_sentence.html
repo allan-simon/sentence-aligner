@@ -24,5 +24,35 @@
         );
     </script>
 
+    <h4>Add Translation</h4>
+    <form
+        onsubmit="
+            Translate.submit(
+                UrlUtils.getUrlParameter('id'),
+                this
+            );
+            return false;
+        "
+    >
+        <input
+            id="content"
+            type="text"
+            name="content"
+            pattern="[^a-z0-1 ].*[.!?！？。]$"
+            placeholder="type your sentence here"
+            required="true"
+        />
+        <br/>
+        <input
+            id="lang"
+            type="text"
+            name="lang"
+            pattern="(eng|fra|cmn)"
+            required="true"
+        />
+        <br/>
+        <input type="submit">
+    </form>
+    <script src="/static/translate.js"></script>
 </body>
 </html>
