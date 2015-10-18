@@ -5,7 +5,7 @@ var AddCouple = (function() {
  *
  */
 var display_message = function (div, message) {
-    div.innerHTML = message  
+    div.innerHTML = message
 };
 
 /**
