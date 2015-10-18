@@ -42,6 +42,18 @@
         // XXX create group list
     </script>
 
+    <h4>Translations</h4>
+
+    <ul id=translations>
+    </ul>
+    <script src="/static/get_translations.js"></script>
+    <script>
+        GetTranslations.load(
+            UrlUtils.getUrlParameter('id'),
+            document.getElementById('translations')
+        );
+    </script>
+
     <h4>Add Translation</h4>
     <form
         onsubmit="
