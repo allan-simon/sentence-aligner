@@ -89,17 +89,24 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 }
 
 //Load translation sentences
-func (d *SentenceDao) GetTranslationSentences(id string) *model.Sentences {
+func (d *SentenceDao) GetTranslationSentences(sourceId string) *model.Sentences {
 
-	var sentences model.Sentences
+	sentences := model.Sentences{}
 
-	log.Println("Fetching sentences")
-	rows, err := DB.Query(`
-		SELECT
-			id, added_at, content, iso639_3
-		FROM sentence s
-		JOIN translations t ON (t.souce_id = s.id)
-	`)
+	log.Println("Fetching sentence's translations")
+	rows, err := DB.Query(
+		`
+			SELECT
+				s.id,
+				s.added_at,
+				s.content,
+				s.iso639_3
+			FROM sentence s
+			JOIN translation t ON (t.dest_id = s.id)
+			WHERE t.source_id = $1
+		`,
+		&sourceId,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -71,13 +71,6 @@ func FindTranslationSentences(request *restful.Request, response *restful.Respon
 	id := request.PathParameter("sentence-id")
 	sentences := sentenceDao.GetTranslationSentences(id)
 
-	if sentences == nil {
-		response.WriteError(
-			http.StatusNotFound,
-			errors.New("Sentence not found"),
-		)
-		return
-	}
 	response.WriteEntity(sentences)
 }
 
