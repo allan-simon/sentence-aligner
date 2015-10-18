@@ -187,6 +187,8 @@ func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 		&sentence.CreatedAt,
 	)
 
+	// TODO: find a way to know when the error is because
+	// we're adding an existing sentence
 	if err != nil {
 		log.Println(err)
 		return nil
