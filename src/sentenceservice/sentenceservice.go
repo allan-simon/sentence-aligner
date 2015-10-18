@@ -24,8 +24,10 @@ func New(dao *dao.SentenceDao) *restful.WebService {
 	log.Println("Adding PATCH /sentences/{sentence-id}")
 	log.Println("Adding GET /sentences")
 	log.Println("Adding POST /sentences")
+	log.Println("Adding GET /sentences/{sentence-id}/translations/sentences")
 
 	service.Route(service.GET("/{sentence-id}").To(FindSentence))
+	service.Route(service.GET("/{sentence-id}/translations/sentences").To(FindTranslationSentences))
 	service.Route(service.PATCH("/{sentence-id}").To(UpdateSentence))
 	service.Route(service.GET("/").To(FindSentences))
 	service.Route(service.POST("/").To(CreateSentence))
@@ -60,6 +62,22 @@ func FindSentences(request *restful.Request, response *restful.Response) {
 		return
 	}
 
+	response.WriteEntity(sentences)
+}
+
+//Find All translation sentences of a given pivot sentence
+func FindTranslationSentences(request *restful.Request, response *restful.Response) {
+	log.Println("Received GET for sentence's translation sentences")
+	id := request.PathParameter("sentence-id")
+	sentences := sentenceDao.GetTranslationSentences(id)
+
+	if sentences == nil {
+		response.WriteError(
+			http.StatusNotFound,
+			errors.New("Sentence not found"),
+		)
+		return
+	}
 	response.WriteEntity(sentences)
 }
 

@@ -88,6 +88,55 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 
 }
 
+//Load translation sentences
+func (d *SentenceDao) GetTranslationSentences(id string) *model.Sentences {
+
+	var sentences model.Sentences
+
+	log.Println("Fetching sentences")
+	rows, err := DB.Query(`
+		SELECT
+			id, added_at, content, iso639_3
+		FROM sentence s
+		JOIN translations t ON (t.souce_id = s.id)
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(
+			&id,
+			&createdAt,
+			&content,
+			&lang,
+		)
+
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		sentences = append(
+			sentences,
+			model.Sentence{
+				SentenceID: id,
+				CreatedAt:  createdAt,
+				Content:    content,
+				Lang:       lang,
+			},
+		)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	return &sentences
+
+}
+
+//
 func (d *SentenceDao) GetSentenceByContentLang(
 	sentence *model.Sentence,
 ) *model.Sentence {
