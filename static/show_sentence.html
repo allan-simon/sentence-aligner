@@ -7,21 +7,39 @@
     <title>Add sentence</title>
 
     <link rel="stylesheet" media="all" href="/static/bootstrap.css" />
+    <link rel="stylesheet" media="all" href="/static/sentence.css" />
 </head>
 
 <body>
-
-    <h4>Sentence</h4>
-    <div id="sentence" ></div>
-
     <script src="/static/async.js"></script>
     <script src="/static/url.js"></script>
+
+    <h4>Sentence</h4>
+    <!-- tabindex is required for onkeyup to work on a div -->
+    <div
+        tabindex="1"
+        id="sentence"
+        onkeyup="
+            SelectSentence.addWordGroup(
+                event,
+                window,
+                this,
+                document.getElementById('sentence-group-list')
+            );
+        "
+    ></div>
+    <div>
+        <ul id="sentence-group-list"></ul>
+    </div>
+
     <script src="/static/show_sentence.js"></script>
+    <script src="/static/select_sentence.js"></script>
     <script>
         ShowSentence.load(
             UrlUtils.getUrlParameter('id'),
             document.getElementById('sentence')
         );
+        // XXX create group list
     </script>
 
     <h4>Add Translation</h4>
