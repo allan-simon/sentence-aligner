@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Align sentences</title>
+
+    <link rel="stylesheet" media="all" href="/static/bootstrap.css" />
+    <link rel="stylesheet" media="all" href="/static/sentence.css" />
+</head>
+
+<body>
+    <script src="/static/async.js"></script>
+    <script src="/static/url.js"></script>
+
+    <div
+        id="source"
+        tabindex="1"
+        onkeyup="
+            SelectSentence.addWordGroup(
+                event,
+                window,
+                this,
+                document.getElementById('source-group-list')
+            );
+        "
+    ></div>
+    <div>
+        <ul id="source-group-list"></ul>
+    </div>
+
+    <div
+        id="destination"
+        tabindex="2"
+        onkeyup="
+            SelectSentence.addWordGroup(
+                event,
+                window,
+                this,
+                document.getElementById('destination-group-list')
+            );
+        "
+    ></div>
+    <div>
+        <ul id="destination-group-list"></ul>
+    </div>
+
+    <script src="/static/show_sentence.js"></script>
+    <script src="/static/select_sentence.js"></script>
+    <script>
+        ShowSentence.load(
+            UrlUtils.getUrlParameter('source_id'),
+            document.getElementById('source')
+        );
+    </script>
+    <script>
+        ShowSentence.load(
+            UrlUtils.getUrlParameter('destination_id'),
+            document.getElementById('destination')
+        );
+    </script>
+</body>

@@ -30,6 +30,14 @@ var GetTranslations = (function () {
                             show.appendChild(document.createTextNode("show"));
                             li.appendChild(show);
 
+                            var align = document.createElement("a");
+                            align.href = "align_sentences.html" +
+                                "?destination_id=" + oneTranslation.id +
+                                "&source_id=" + id
+                            ;
+                            align.appendChild(document.createTextNode("align"));
+                            li.appendChild(align);
+
                             translationsUL.appendChild(li);
                         }
                     );
