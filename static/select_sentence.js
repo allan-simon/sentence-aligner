@@ -106,9 +106,14 @@ var addGroupToList = function(group, groupList, sentence) {
 
     // otherwise we create said group, with associated event
     li = document.createElement("li");
+
+    var remove = document.createElement("button");
+    remove.appendChild(document.createTextNode("remove"));
     // TODO certainly firefox only?
+    li.appendChild(remove);
     li.setAttribute("data-group", group);
-    li.onclick = removeWordGroup.bind(
+    remove.onclick = removeWordGroup.bind(
+        remove,
         li,
         sentence,
         group
@@ -138,14 +143,13 @@ var addGroupToList = function(group, groupList, sentence) {
  * remove a group of words from the sentence and the list of group
  * (only the group, not the content itself)
  *
- * this method is associated to a <li>
- *
+ * @param {Element} li
  * @param {Element} sentence
  * @param {string}  group
  *
  * @private
  */
-var removeWordGroup = function(sentence, group) {
+var removeWordGroup = function(li, sentence, group) {
     var sentenceGroups = getGroupsFromElement(sentence, group);
     for (var i = 0; i <  sentenceGroups.length; i++) {
         sentenceGroups[i].outerHTML = sentenceGroups[i].innerHTML;
@@ -153,7 +157,7 @@ var removeWordGroup = function(sentence, group) {
     // normalize permit to automatically merge adjacent text nodes etc.
     sentence.normalize();
 
-    this.remove();
+    li.remove();
 };
 
 /**
