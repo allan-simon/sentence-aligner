@@ -52,7 +52,7 @@ var addWordGroup = function(
  * @return {bool}
  */
 var insideSameGroup = function(sentence, group, range) {
-    var sentenceGroups = sentence.getElementsByClassName(group);
+    var sentenceGroups = getGroupsFromElement(sentence, group);
     for (var i = 0; i <  sentenceGroups.length; i++) {
         if (
             sentenceGroups[i].contains(range.endContainer) ||
@@ -77,7 +77,7 @@ var createWordsGroupFromRange = function(
 ) {
     var span = document.createElement("span");
     // TODO certainly firefox only?
-    span.classList.add(group);
+    span.setAttribute("data-group", group);
 
     range.surroundContents(span);
 
@@ -91,14 +91,15 @@ var createWordsGroupFromRange = function(
  */
 var addGroupToList = function(group, groupList, sentence) {
 
-
+    var wordGroups = getGroupsFromElement(groupList,group);
     // we're not supposed to have more than once the same group
-    if (groupList.getElementsByClassName(group).length > 1) {
+    if (wordGroups.length > 1) {
         throw new Exception("too many group");
     }
 
-    var li = groupList.getElementsByClassName(group)[0];
-    // if this group already exists in the list, it's fine // we don't need to do anything var li = groupList.getElementsByClassName(group)[0];
+    var li = wordGroups[0];
+    // if this group already exists in the list, it's fine
+    // we don't need to do anything
     if (li !== undefined) {
         return;
     }
@@ -106,7 +107,7 @@ var addGroupToList = function(group, groupList, sentence) {
     // otherwise we create said group, with associated event
     li = document.createElement("li");
     // TODO certainly firefox only?
-    li.classList.add(group);
+    li.setAttribute("data-group", group);
     li.onclick = removeWordGroup.bind(
         li,
         sentence,
@@ -115,7 +116,7 @@ var addGroupToList = function(group, groupList, sentence) {
 
     // mouse over -> underline the words in that group
     li.onmouseover = function() {
-        var sentenceGroups = sentence.getElementsByClassName(group);
+        var sentenceGroups = getGroupsFromElement(sentence, group);
         for (var i = 0; i <  sentenceGroups.length; i++) {
             sentenceGroups[i].style.textDecoration = "underline";
         }
@@ -123,7 +124,7 @@ var addGroupToList = function(group, groupList, sentence) {
 
     // mouse out -> remove underline on the words in that group
     li.onmouseout = function() {
-        var sentenceGroups = sentence.getElementsByClassName(group);
+        var sentenceGroups = getGroupsFromElement(sentence, group);
         for (var i = 0; i <  sentenceGroups.length; i++) {
             sentenceGroups[i].style.textDecoration = "";
         }
@@ -145,7 +146,7 @@ var addGroupToList = function(group, groupList, sentence) {
  * @private
  */
 var removeWordGroup = function(sentence, group) {
-    var sentenceGroups = sentence.getElementsByClassName(group);
+    var sentenceGroups = getGroupsFromElement(sentence, group);
     for (var i = 0; i <  sentenceGroups.length; i++) {
         sentenceGroups[i].outerHTML = sentenceGroups[i].innerHTML;
     }
@@ -154,6 +155,7 @@ var removeWordGroup = function(sentence, group) {
 
     this.remove();
 };
+
 /**
  * Check if said selection can be used to deliminate a group of words
  *
@@ -193,7 +195,7 @@ var isValidKey = function(keyEvent) {
 var getGroupFromKey = function(keyEvent) {
 
     var keycode = keyEvent.keyCode;
-    return "group-" + {
+    return {
         48 : "0",
         49 : "1",
         50 : "2",
@@ -206,6 +208,17 @@ var getGroupFromKey = function(keyEvent) {
         57 : "9",
     }[keycode];
 
+};
+
+/**
+ * @param {Element}
+ * @param {string}
+ *
+ * @return {NodeList}
+ */
+var getGroupsFromElement = function (element, group) {
+
+    return element.querySelectorAll("[data-group='"+group+"']");
 };
 
 
