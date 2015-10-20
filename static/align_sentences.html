@@ -60,4 +60,17 @@
             document.getElementById('destination')
         );
     </script>
+
+    <script src="/static/align_sentences.js"></script>
+    <button
+        onclick="
+            AlignSentences.save(
+                UrlUtils.getUrlParameter('translation_id'),
+                document.getElementById('source'),
+                document.getElementById('destination')
+            );
+        "
+    >
+        Save
+    </button>
 </body>
