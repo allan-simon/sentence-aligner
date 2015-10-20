@@ -37,6 +37,7 @@ var addWordGroup = function(
     }
 
     createWordsGroupFromRange(group, range);
+    sentence.normalize();
 
     addGroupToList(group, groupList, sentence);
 };
