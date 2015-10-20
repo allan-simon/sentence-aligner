@@ -89,14 +89,15 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 }
 
 //Load translation sentences
-func (d *SentenceDao) GetTranslationSentences(sourceId string) *model.Sentences {
+func (d *SentenceDao) GetTranslationSentences(sourceId string) *map[string]model.Sentence {
 
-	sentences := model.Sentences{}
+	sentences := make(map[string]model.Sentence, 0)
 
 	log.Println("Fetching sentence's translations")
 	rows, err := DB.Query(
 		`
 			SELECT
+				t.id,
 				s.id,
 				s.added_at,
 				s.content,
@@ -112,7 +113,9 @@ func (d *SentenceDao) GetTranslationSentences(sourceId string) *model.Sentences 
 	}
 	defer rows.Close()
 	for rows.Next() {
+		var translationID string
 		err := rows.Scan(
+			&translationID,
 			&id,
 			&createdAt,
 			&content,
@@ -123,15 +126,12 @@ func (d *SentenceDao) GetTranslationSentences(sourceId string) *model.Sentences 
 			log.Println(err)
 			continue
 		}
-		sentences = append(
-			sentences,
-			model.Sentence{
-				SentenceID: id,
-				CreatedAt:  createdAt,
-				Content:    content,
-				Lang:       lang,
-			},
-		)
+		sentences[translationID] = model.Sentence{
+			SentenceID: id,
+			CreatedAt:  createdAt,
+			Content:    content,
+			Lang:       lang,
+		}
 	}
 
 	if err := rows.Err(); err != nil {
