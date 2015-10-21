@@ -46,17 +46,12 @@
         <ul id="destination-group-list"></ul>
     </div>
 
-    <script src="/static/show_sentence.js"></script>
+    <script src="/static/get_alignments.js"></script>
     <script src="/static/select_sentence.js"></script>
     <script>
-        ShowSentence.load(
-            UrlUtils.getUrlParameter('source_id'),
-            document.getElementById('source')
-        );
-    </script>
-    <script>
-        ShowSentence.load(
-            UrlUtils.getUrlParameter('destination_id'),
+        GetAlignments.get(
+            UrlUtils.getUrlParameter('translation_id'),
+            document.getElementById('source'),
             document.getElementById('destination')
         );
     </script>

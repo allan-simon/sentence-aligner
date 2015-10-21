@@ -18,8 +18,31 @@ type TranslationDao struct {
 //GetTranslation load translation from db
 func (d *TranslationDao) GetTranslation(id string) *model.Translation {
 	log.Println("Fetching translation with id:" + id)
-	err := DB.QueryRow("SELECT * FROM translation WHERE id = $1", id).
-		Scan(
+	err := DB.QueryRow(
+		`
+			SELECT
+				t.id,
+				t.source_id,
+				t.dest_id,
+				CASE
+					WHEN alignment_source IS NULL THEN
+						'<sentence>' || source.content || '</sentence>'
+					ELSE
+						xmlserialize(document alignment_source as text)
+				END,
+				CASE
+					WHEN alignment_dest IS NULL THEN
+						'<sentence>' || dest.content || '</sentence>'
+					ELSE
+						xmlserialize(document alignment_dest as text)
+				END
+			FROM translation t
+			JOIN  sentence source ON t.source_id = source.id
+			JOIN  sentence dest ON t.dest_id = dest.id
+			WHERE t.id = $1
+		`,
+		id,
+	).Scan(
 		&id,
 		&sourceId,
 		&destId,
