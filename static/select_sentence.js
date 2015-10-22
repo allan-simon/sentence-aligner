@@ -6,8 +6,10 @@ var SelectSentence = (function(document) {
  *
  * @param {Event}   pressEvent
  * @param {Window}  localWindow
- * @param {Element} sentence, div containing the sentence
- * @param {Element} groupList,
+ * @param {Element} sentence div containing the sentence
+ * @param {Element} groupList
+ *
+ * @public
  */
 var addWordGroup = function(
     pressEvent,
@@ -102,10 +104,12 @@ var createWordsGroupFromRange = function(
  * @param {string}
  * @param {Element}
  * @param {Element}
+ *
+ * @private
  */
 var addGroupToList = function(group, groupList, sentence) {
 
-    var wordGroups = getGroupsFromElement(groupList,group);
+    var wordGroups = getGroupsFromElement(groupList, group);
     // we're not supposed to have more than once the same group
     if (wordGroups.length > 1) {
         throw new Exception("too many group");
