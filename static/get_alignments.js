@@ -2,15 +2,20 @@ var GetAlignments = (function () {
 'use strict';
 
 /**
+ * Get the alignments from translation identified by translationID
+ * and load the two parts respectively in sourceElement, and destElement
+ * it returns a promise, so that event can be chained
+ *
  * @param {string}  translationID
  * @param {Element} sourceElement
  * @param {Element} destElement
  *
+ * @return {Promise}
  * @public
  */
 var get = function(translationID, sourceElement, destElement) {
 
-    Async.get('/translations/' + translationID )
+    return Async.get('/translations/' + translationID )
         .then(
             function(translation) {
                 var parser = new window.DOMParser();

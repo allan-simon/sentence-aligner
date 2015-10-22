@@ -53,7 +53,17 @@
             UrlUtils.getUrlParameter('translation_id'),
             document.getElementById('source'),
             document.getElementById('destination')
-        );
+        ).then(function() {
+            SelectSentence.generateGroupListItems(
+                document.getElementById('source'),
+                document.getElementById('source-group-list')
+            )
+        }).then(function() {;
+            SelectSentence.generateGroupListItems(
+                document.getElementById('destination'),
+                document.getElementById('destination-group-list')
+            )
+        });
     </script>
 
     <script src="/static/align_sentences.js"></script>

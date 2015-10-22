@@ -43,6 +43,19 @@ var addWordGroup = function(
 };
 
 /**
+ * @param {Element} sentence
+ * @param {Element} groupList
+ */
+var generateGroupListItems = function(sentence, groupList) {
+    var groups = Array.from(sentence.querySelectorAll("[data-group]"));
+
+    var groupNames = groups.map(function(g) { return g.dataset.group; });
+    groupNames.forEach(function(name) {
+        addGroupToList(name, groupList, sentence);
+    });
+};
+
+/**
  * Check whether the range is already inside said group
  * of given sentence
  *
@@ -228,7 +241,8 @@ var getGroupsFromElement = function (element, group) {
 
 
 return {
-    addWordGroup : addWordGroup
+    addWordGroup : addWordGroup,
+    generateGroupListItems: generateGroupListItems
 };
 
 }(document));
