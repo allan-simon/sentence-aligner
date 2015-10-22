@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Show sentence</title>
+
+    <link rel="stylesheet" media="all" href="/static/bootstrap.css" />
+</head>
+
+<body>
+    <script src="/static/async.js"></script>
+    <script src="/static/url.js"></script>
+
+
+    <h4>Sentences</h4>
+
+
+    <script src="/static/get_all_sentences.js"></script>
+    <ul id="list-sentences">
+    </ul>
+    <script>
+        AllSentences.get(
+            document.getElementById("list-sentences")
+        );
+    </script>
+</body>
