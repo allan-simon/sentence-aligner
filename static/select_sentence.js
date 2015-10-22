@@ -125,6 +125,9 @@ var addGroupToList = function(group, groupList, sentence) {
     // otherwise we create said group, with associated event
     li = document.createElement("li");
 
+    var groupLabel = document.createTextNode(group);
+    li.appendChild(groupLabel);
+
     var remove = document.createElement("button");
     remove.appendChild(document.createTextNode("remove"));
     // TODO certainly firefox only?
