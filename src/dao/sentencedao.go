@@ -9,6 +9,7 @@ import (
 var (
 	id        string
 	content   string
+	structure *string
 	lang      string
 	createdAt time.Time
 )
@@ -20,11 +21,21 @@ type SentenceDao struct {
 func (d *SentenceDao) GetSentence(id string) *model.Sentence {
 	log.Println("Fetching sentence with id:" + id)
 	err := DB.QueryRow(
-		`SELECT id, added_at, content, iso639_3 FROM sentence WHERE id = $1`,
+		`
+			SELECT
+				id,
+				added_at,
+				structure,
+				content,
+				iso639_3
+			FROM sentence
+			WHERE id = $1
+		`,
 		id,
 	).Scan(
 		&id,
 		&createdAt,
+		&structure,
 		&content,
 		&lang,
 	)
@@ -38,6 +49,7 @@ func (d *SentenceDao) GetSentence(id string) *model.Sentence {
 	sentence := &model.Sentence{
 		SentenceID: id,
 		CreatedAt:  createdAt,
+		Structure:  structure,
 		Content:    content,
 		Lang:       lang,
 	}
