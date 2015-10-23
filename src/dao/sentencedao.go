@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"database/sql"
 	"github.com/allan-simon/sentence-aligner/model"
 	"log"
 	"time"
@@ -60,18 +61,71 @@ func (d *SentenceDao) GetSentence(id string) *model.Sentence {
 //GetSentences load all sentences from db
 func (d *SentenceDao) GetSentences() *model.Sentences {
 
-	var sentences model.Sentences
-
 	log.Println("Fetching sentences")
-	rows, err := DB.Query("SELECT id, added_at, content, iso639_3 FROM sentence")
+	rows, err := DB.Query(
+		`
+		SELECT
+			id,
+			added_at,
+			structure,
+			content,
+			iso639_3
+		FROM sentence
+		ORDER BY added_at
+		LIMIT 5
+		`,
+	)
+
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return rowsToSentences(rows)
+}
+
+//
+func (d *SentenceDao) GetSentencesFrom(startingFromID string) *model.Sentences {
+
+	log.Println("Fetching sentences")
+	rows, err := DB.Query(
+		`
+		SELECT
+			id,
+			added_at,
+			structure,
+			content,
+			iso639_3
+		FROM sentence
+		WHERE
+			added_at >= (
+				SELECT added_at
+				FROM sentence
+				WHERE id = $1
+			) AND
+			id != $1
+		ORDER BY added_at
+		LIMIT 5
+		`,
+		startingFromID,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return rowsToSentences(rows)
+}
+
+func rowsToSentences(rows *sql.Rows) *model.Sentences {
+
+	var sentences model.Sentences
 	defer rows.Close()
+
 	for rows.Next() {
 		err := rows.Scan(
 			&id,
 			&createdAt,
+			&structure,
 			&content,
 			&lang,
 		)
@@ -85,6 +139,7 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 			model.Sentence{
 				SentenceID: id,
 				CreatedAt:  createdAt,
+				Structure:  structure,
 				Content:    content,
 				Lang:       lang,
 			},
@@ -97,7 +152,6 @@ func (d *SentenceDao) GetSentences() *model.Sentences {
 	}
 
 	return &sentences
-
 }
 
 //Load translation sentences

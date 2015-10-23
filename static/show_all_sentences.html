@@ -20,6 +20,21 @@
     <script src="/static/get_all_sentences.js"></script>
     <ul id="list-sentences">
     </ul>
+    <button
+        onclick="
+            var that = this;
+            that.disabled = true;
+            AllSentences.getNextPage(
+                document.getElementById('list-sentences')
+            ).then(
+                function() { that.disabled = false }
+            ).catch(
+                function() { that.disabled = false }
+            )
+        "
+    >
+        Show More
+    </button>
     <script>
         AllSentences.get(
             document.getElementById("list-sentences")

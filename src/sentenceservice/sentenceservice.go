@@ -53,7 +53,15 @@ func FindSentence(request *restful.Request, response *restful.Response) {
 //FindSentence load sentences and return json representation
 func FindSentences(request *restful.Request, response *restful.Response) {
 	log.Println("Received GET for sentences")
-	sentences := sentenceDao.GetSentences()
+
+	fromID := request.QueryParameter("from_id")
+	var sentences *model.Sentences
+	if fromID == "" {
+		sentences = sentenceDao.GetSentences()
+	} else {
+		sentences = sentenceDao.GetSentencesFrom(fromID)
+	}
+
 	if sentences == nil {
 		response.WriteError(
 			http.StatusNotFound,
