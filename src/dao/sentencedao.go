@@ -269,6 +269,41 @@ func (d *SentenceDao) CreateSentence(sentence *model.Sentence) *model.Sentence {
 	return sentence
 }
 
+func (d *SentenceDao) SetStructure(
+	id string,
+	sentence *model.Sentence,
+) (*model.Sentence, error) {
+
+	result, err := DB.Exec(
+		`
+			UPDATE sentence
+			SET structure = $1
+			WHERE id =  $2
+		`,
+		sentence.Structure,
+		id,
+	)
+
+	//TODO duplicated code
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if rowsAffected < 0 {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	sentence.SentenceID = id
+
+	return sentence, nil
+
+}
+
 func (d *SentenceDao) UpdateSentence(
 	id string,
 	sentence *model.Sentence,

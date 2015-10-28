@@ -1,19 +1,47 @@
 var ShowSentence = (function () {
-    'use strict';
+
+'use strict';
 
 
-    var load = function (id, sentenceDiv) {
-        Async.get('/sentences/' + id)
-            .then(
-                function(sentence) {
-                    sentenceDiv.innerHTML = sentence.content;
+var load = function (id, sentenceDiv) {
+    Async.get('/sentences/' + id)
+        .then(
+            function(sentence) {
+                sentenceDiv.innerHTML = sentence.content;
+            }
+        )
+        .catch(function() { sentenceDiv.innerHTML = 'Error';})
+    ;
+};
+
+/**
+ * @param {string}  id
+ * @param {Element} sentenceDiv
+ */
+var loadStructure = function (id, sentenceDiv) {
+    return Async.get('/sentences/' + id)
+        .then(
+            function(sentence) {
+                if (sentence.structure === undefined) {
+                    sentenceDiv.appendChild(document.createTextNode(sentence.content));
+                    return;
                 }
-            )
-            .catch(function() { sentenceDiv.innerHTML = 'Error';})
-        ;
-    }
+                var parser = new window.DOMParser();
+                var sourceXML = parser.parseFromString(sentence.structure, "text/xml");
+                Converter.createHTMLFromXML(
+                    sourceXML.documentElement,
+                    sentenceDiv
+                );
 
-    return {
-        load: load
-    }
+            }
+        )
+        .catch(function() { sentenceDiv.innerHTML = 'Error';})
+    ;
+};
+
+return {
+    load: load,
+    loadStructure: loadStructure
+};
+
 } ());

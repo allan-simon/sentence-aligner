@@ -32,6 +32,17 @@
         <ul id="sentence-group-list"></ul>
     </div>
 
+    <a
+        href="#"
+        id="edit-structure"
+    >
+        Edit structure
+    </a>
+    <script>
+        var link = document.getElementById("edit-structure");
+        link.href ='edit_structure.html?id='+UrlUtils.getUrlParameter('id')
+    </script>
+
     <script src="/static/show_sentence.js"></script>
     <script src="/static/select_sentence.js"></script>
     <script>

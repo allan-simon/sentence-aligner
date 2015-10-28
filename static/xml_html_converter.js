@@ -64,7 +64,7 @@ var createXMLFromHTML = function (span, xmlSource) {
             continue;
         }
         var block = document.createElement("block");
-        block = datasetToAttributes(block, node.dataset);
+        block = dataAttributesToXMLAttributes(block, node.attributes);
         block = createXMLFromHTML(node, block);
         xmlSource.appendChild(block);
     }
@@ -74,17 +74,25 @@ var createXMLFromHTML = function (span, xmlSource) {
 
 /**
  * @param {Element} block
- * @param {DOMStringMap} dataset TODO or undefined
+ * @param {NamedNodeMap} attributesMap
  */
-var datasetToAttributes = function(block, dataset) {
-    if (dataset === undefined) {
+var dataAttributesToXMLAttributes = function(block, attributesMap) {
+    if (attributesMap === undefined) {
         return block;
     }
 
-    var keys = Object.keys(dataset);
-    keys.forEach(
-        function (oneKey) {
-            block.setAttribute(oneKey, dataset[oneKey]);
+    var attributes = Array.from(attributesMap);
+    var dataAttributes = attributes.filter(
+        function(oneAttribute) {
+            return oneAttribute.nodeName.startsWith("data-");
+        }
+    );
+    dataAttributes.forEach(
+        function (dataAttribute) {
+            block.setAttribute(
+                dataAttribute.nodeName.substr("data-".length),
+                dataAttribute.value
+            );
         }
     );
     return block;

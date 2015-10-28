@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Show sentence</title>
+
+    <link rel="stylesheet" media="all" href="/static/bootstrap.css" />
+    <link rel="stylesheet" media="all" href="/static/sentence.css" />
+</head>
+
+<body>
+    <script src="/static/async.js"></script>
+    <script src="/static/url.js"></script>
+    <script src="/static/xml_html_converter.js"></script>
+
+    <h4>Sentence's structure</h4>
+
+
+    <div
+        tabindex="1"
+        id="structure"
+        onkeyup="
+            SelectSentence.addWordGroup(
+                event,
+                window,
+                this,
+                document.getElementById('structure-group-list')
+            );
+            Structure.addButton(
+                event,
+                this,
+                document.getElementById('structure-group-list')
+            );
+        "
+    ></div>
+    <div>
+        <ul id="structure-group-list"></ul>
+    </div>
+
+    <script src="/static/show_sentence.js"></script>
+    <script src="/static/edit_structure.js"></script>
+    <script src="/static/select_sentence.js"></script>
+    <script>
+        ShowSentence.loadStructure(
+            UrlUtils.getUrlParameter('id'),
+            document.getElementById('structure')
+        ).then(function() {
+            SelectSentence.generateGroupListItems(
+                document.getElementById('structure'),
+                document.getElementById('structure-group-list')
+            )
+        }).then(function() {
+            Structure.generateMetaList(
+                document.getElementById('structure'),
+                document.getElementById('structure-group-list')
+            );
+        });
+    </script>
+
+    <div>
+        <button
+            onclick="
+                Structure.save(
+                    UrlUtils.getUrlParameter('id'),
+                    document.getElementById('structure')
+                )
+            "
+        >
+            Save
+        </button>
+    </div>
+
+</body>
+</html>

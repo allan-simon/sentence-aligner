@@ -22,12 +22,14 @@ func New(dao *dao.SentenceDao) *restful.WebService {
 
 	log.Println("Adding GET /sentences/{sentence-id}")
 	log.Println("Adding PATCH /sentences/{sentence-id}")
+	log.Println("Adding PUT /sentences/{sentence-id}/structure")
 	log.Println("Adding GET /sentences")
 	log.Println("Adding POST /sentences")
 	log.Println("Adding GET /sentences/{sentence-id}/translations/sentences")
 
 	service.Route(service.GET("/{sentence-id}").To(FindSentence))
 	service.Route(service.GET("/{sentence-id}/translations/sentences").To(FindTranslationSentences))
+	service.Route(service.PUT("/{sentence-id}/structure").To(SetStructure))
 	service.Route(service.PATCH("/{sentence-id}").To(UpdateSentence))
 	service.Route(service.GET("/").To(FindSentences))
 	service.Route(service.POST("/").To(CreateSentence))
@@ -157,4 +159,43 @@ func UpdateSentence(request *restful.Request, response *restful.Response) {
 	}
 
 	response.WriteEntity(updatedSentence)
+}
+
+//
+func SetStructure(request *restful.Request, response *restful.Response) {
+	var sentence model.Sentence
+	err := request.ReadEntity(&sentence)
+	id := request.PathParameter("sentence-id")
+
+	if err != nil {
+		response.WriteError(http.StatusBadRequest, err)
+		return
+	}
+
+	updatedSentence, err := sentenceDao.SetStructure(id, &sentence)
+
+	if err == nil && updatedSentence == nil {
+		response.WriteError(
+			http.StatusNotFound,
+			errors.New("Sentence not found"),
+		)
+		return
+	}
+
+	existingSentence := sentenceDao.GetSentence(id)
+	// TODO: duplicated code: factorize
+	if existingSentence == nil {
+		response.WriteError(
+			http.StatusInternalServerError,
+			errors.New("Error while saving sentence"),
+		)
+		return
+	}
+	response.WriteHeader(http.StatusSeeOther)
+	response.ResponseWriter.Header().Set(
+		"link",
+		"/sentences/"+existingSentence.SentenceID,
+	)
+	response.WriteEntity(existingSentence)
+
 }
