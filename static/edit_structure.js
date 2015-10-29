@@ -8,12 +8,21 @@ var Structure = (function () {
  *
  * @public
  */
-var addButton = function(keyEvent, sentenceDiv, groupList) {
+var addButtonOnKey = function(keyEvent, sentenceDiv, groupList) {
 
     var group = getGroupFromKey(keyEvent);
     if (group === undefined) {
         return;
     }
+    addButtonForGroup(sentenceDiv, group, groupList);
+};
+
+/**
+ * @param {Element} sentenceDiv
+ * @param {String}  group
+ * @param {Element} groupList
+ */
+var addButtonForGroup = function(sentenceDiv, group, groupList) {
     var wordGroups = getGroupsFromElement(groupList, group);
     if (wordGroups.length !== 1) {
         return;
@@ -70,6 +79,8 @@ var generateMetaList = function(sentenceDiv, groupList) {
         function(item) {
             /** @type {String} */
             var group = item.dataset.group;
+
+            addButtonForGroup(sentenceDiv, group, groupList);
             // TODO we consider that all blocks belonging to the same group
             // should have the same meta key/value, so we only treat the first
             // one
@@ -263,7 +274,7 @@ var getGroupFromKey = function(keyEvent) {
 };
 
 return {
-    addButton: addButton,
+    addButtonOnKey: addButtonOnKey,
     save: save,
     generateMetaList: generateMetaList
 };
