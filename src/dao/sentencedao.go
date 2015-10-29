@@ -116,6 +116,71 @@ func (d *SentenceDao) GetSentencesFrom(startingFromID string) *model.Sentences {
 	return rowsToSentences(rows)
 }
 
+//GetSentences load all sentences from db matching a given XPath
+func (d *SentenceDao) GetSentencesByXPath(xpath string) *model.Sentences {
+
+	log.Println("Fetching sentences by xpath: " + xpath)
+	rows, err := DB.Query(
+		`
+		SELECT
+			id,
+			added_at,
+			structure,
+			content,
+			iso639_3
+		FROM sentence
+		WHERE xmlexists($1 PASSING BY REF structure)
+		ORDER BY added_at
+		LIMIT 5
+		`,
+		xpath,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return rowsToSentences(rows)
+}
+
+// Paginated version of GetSentencesByXPath
+func (d *SentenceDao) GetSentencesByXPathFrom(
+	xpath string,
+	startingFromID string,
+) *model.Sentences {
+
+	log.Println("Fetching sentences")
+	rows, err := DB.Query(
+		`
+		SELECT
+			id,
+			added_at,
+			structure,
+			content,
+			iso639_3
+		FROM sentence
+		WHERE
+			added_at >= (
+				SELECT added_at
+				FROM sentence
+				WHERE id = $1
+			) AND
+			xmlexists($2 PASSING BY REF structure) AND
+			id != $1
+		ORDER BY added_at
+		LIMIT 5
+		`,
+		startingFromID,
+		xpath,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return rowsToSentences(rows)
+}
+
 func rowsToSentences(rows *sql.Rows) *model.Sentences {
 
 	var sentences model.Sentences

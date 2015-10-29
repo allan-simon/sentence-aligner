@@ -56,14 +56,37 @@ func FindSentence(request *restful.Request, response *restful.Response) {
 func FindSentences(request *restful.Request, response *restful.Response) {
 	log.Println("Received GET for sentences")
 
-	fromID := request.QueryParameter("from_id")
 	var sentences *model.Sentences
+
+	fromID := request.QueryParameter("from_id")
+
+	xpath := request.QueryParameter("xpath")
+	if xpath != "" {
+		sentences = FindSentencesByXPath(xpath, fromID)
+		writeSentencesResponse(sentences, response)
+		return
+	}
+
 	if fromID == "" {
 		sentences = sentenceDao.GetSentences()
 	} else {
 		sentences = sentenceDao.GetSentencesFrom(fromID)
 	}
+	writeSentencesResponse(sentences, response)
+}
 
+//
+func FindSentencesByXPath(xpath string, fromID string) (sentences *model.Sentences) {
+	if fromID == "" {
+		return sentenceDao.GetSentencesByXPath(xpath)
+	}
+
+	sentences = sentenceDao.GetSentencesByXPathFrom(xpath, fromID)
+	return
+}
+
+//
+func writeSentencesResponse(sentences *model.Sentences, response *restful.Response) {
 	if sentences == nil {
 		response.WriteError(
 			http.StatusNotFound,
