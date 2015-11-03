@@ -184,7 +184,7 @@ func (d *SentenceDao) GetSentencesByXPathFrom(
 
 func rowsToSentences(rows *sql.Rows) *model.Sentences {
 
-	var sentences model.Sentences
+	sentences := model.Sentences{}
 	defer rows.Close()
 
 	for rows.Next() {
