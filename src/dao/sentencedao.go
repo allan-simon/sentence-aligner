@@ -137,7 +137,8 @@ func (d *SentenceDao) GetSentencesByXPath(xpath string) *model.Sentences {
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil
 	}
 
 	return rowsToSentences(rows)
